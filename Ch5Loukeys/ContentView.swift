@@ -6,40 +6,35 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 struct ContentView: View {
-    @State private var textToSend: String = ""
-    @State private var receivedText: String = ""
     
     private var watchConnector = WatchConnector()
     
     var body: some View {
         VStack {
-            TextField("Inserisci testo", text: $textToSend)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-            
             Button(action: {
-                watchConnector.sendTextToWatch(textToSend)
+                watchConnector.sendTaskNotificationToWatch()
             }) {
-                Text("Invia a Watch")
+                Text("Invia Notifica a Watch")
                     .padding()
                     .background(Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
-            
-            Text("Testo ricevuto: \(receivedText)")
-                .padding()
-            
-            Spacer()
         }
-        .padding()
         .onAppear {
-            NotificationCenter.default.addObserver(forName: NSNotification.Name("ReceivedText"), object: nil, queue: .main) { notification in
-                if let text = notification.userInfo?["text"] as? String {
-                    receivedText = text
-                }
+            requestNotificationPermission()
+        }
+    }
+    
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, _ in
+            if granted {
+                print("Notifiche autorizzate.")
+            } else {
+                print("Permessi notifiche negati.")
             }
         }
     }
@@ -48,3 +43,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+

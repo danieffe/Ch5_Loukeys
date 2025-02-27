@@ -6,45 +6,35 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 struct ContentView: View {
-    @State private var textToSend: String = ""
-    @State private var receivedText: String = ""
     
     private var watchToiOSConnector = WatchToiOSConnector()
     
     var body: some View {
         VStack {
-            TextField("Inserisci testo", text: $textToSend)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(8)
-                .padding(.horizontal)
-            
             Button(action: {
-                watchToiOSConnector.sendTextToiOS(textToSend)
+                watchToiOSConnector.sendTaskNotificationToiOS()
             }) {
-                Text("Invia a iPhone")
+                Text("Invia Notifica a iPhone")
                     .padding()
-                    .frame(maxWidth: .infinity)
                     .background(Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
-            .padding(.horizontal)
-            
-            Text("Testo ricevuto: \(receivedText)")
-                .padding()
-                .multilineTextAlignment(.center)
-            
-            Spacer()
         }
-        .padding()
         .onAppear {
-            NotificationCenter.default.addObserver(forName: NSNotification.Name("ReceivedText"), object: nil, queue: .main) { notification in
-                if let text = notification.userInfo?["text"] as? String {
-                    receivedText = text
-                }
+            requestNotificationPermission()
+        }
+    }
+    
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, _ in
+            if granted {
+                print("Notifiche autorizzate.")
+            } else {
+                print("Permessi notifiche negati.")
             }
         }
     }
@@ -53,3 +43,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
