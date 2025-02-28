@@ -15,16 +15,14 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-           
             HStack {
-                Text("Task")
+                Text("Task to do")
                     .font(.headline)
                     .foregroundColor(.yellow)
                 Spacer()
             }
             .padding(.horizontal)
             
-           
             ZStack(alignment: .topTrailing) {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.black.opacity(0.8))
@@ -50,17 +48,16 @@ struct ContentView: View {
             }
             .padding(.horizontal)
 
-            
+ 
             Button(action: {
                 showConfirmation = true
                 WatchToiOSConnector.shared.sendTaskCompletionToiOS(taskName: taskTitle)
             }) {
                 Text("Done")
                     .font(.headline)
-                    .foregroundColor(.yellow)
+                    .foregroundColor(.black)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.black)
                     .cornerRadius(10)
             }
             .padding(.horizontal)
@@ -69,7 +66,7 @@ struct ContentView: View {
         }
         .padding()
         .fullScreenCover(isPresented: $showConfirmation) {
-            ConfirmationView()
+            ConfirmationView(showConfirmation: $showConfirmation)
         }
     }
 }
@@ -77,5 +74,6 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
 
 

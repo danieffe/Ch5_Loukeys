@@ -8,36 +8,33 @@
 import SwiftUI
 
 struct ConfirmationView: View {
+    @Binding var showConfirmation: Bool 
     var body: some View {
-        VStack {
-            Spacer()
-            
-            Text("Well Done Bruno!")
-                .font(.headline)
-                .foregroundColor(.black)
+        ZStack {
+            Color.yellow
+                .ignoresSafeArea()
 
-            Spacer()
-
-            Button(action: {
-                WKInterfaceDevice.current().play(.success)
-            }) {
-                Text("OK")
+            VStack {
+                Spacer()
+                
+                Text("Well Done Bruno!")
                     .font(.headline)
                     .foregroundColor(.black)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.yellow.opacity(0.8))
-                    .cornerRadius(10)
+
+                Spacer()
             }
-            .padding(.horizontal)
         }
-        .padding()
-        .background(Color.yellow)
-        .cornerRadius(20)
+        .onAppear {
+            WKInterfaceDevice.current().play(.success)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) { // 🔹 Attende 3s e chiude la view
+                showConfirmation = false
+            }
+        }
     }
 }
 
 #Preview {
-    ConfirmationView()
+    ConfirmationView(showConfirmation: .constant(true))
 }
+
 
