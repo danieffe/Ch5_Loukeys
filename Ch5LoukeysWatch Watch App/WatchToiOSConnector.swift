@@ -7,14 +7,14 @@
 
 import Foundation
 import WatchConnectivity
-import UserNotifications
 
 class WatchToiOSConnector: NSObject, WCSessionDelegate {
     
+    static let shared = WatchToiOSConnector()
     var session: WCSession
     
-    init(session: WCSession = .default) {
-        self.session = session
+    private override init() {
+        self.session = WCSession.default
         super.init()
         if WCSession.isSupported() {
             session.delegate = self
@@ -28,30 +28,15 @@ class WatchToiOSConnector: NSObject, WCSessionDelegate {
         }
     }
     
-    func sendTaskNotificationToiOS() {
+    func sendTaskCompletionToiOS(taskName: String) {
         if session.isReachable {
-            session.sendMessage(["taskNotification": "Task to Do"], replyHandler: nil, errorHandler: { error in
+            let message = ["taskCompleted": taskName]
+            session.sendMessage(message, replyHandler: nil, errorHandler: { error in
                 print("Errore invio messaggio: \(error.localizedDescription)")
             })
         }
     }
-    
-    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
-        if let _ = message["taskNotification"] as? String {
-            DispatchQueue.main.async {
-                self.sendLocalNotification()
-            }
-        }
-    }
-    
-    private func sendLocalNotification() {
-        let content = UNMutableNotificationContent()
-        content.title = "Nuova Notifica"
-        content.body = "Task to Do"
-        content.sound = .default
-        
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-        UNUserNotificationCenter.current().add(request)
-    }
 }
+
+
 

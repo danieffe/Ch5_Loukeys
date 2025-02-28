@@ -6,36 +6,70 @@
 //
 
 import SwiftUI
-import UserNotifications
+import WatchConnectivity
 
 struct ContentView: View {
-    
-    private var watchToiOSConnector = WatchToiOSConnector()
+    @State private var showConfirmation = false
+    let taskTitle = "Morning Pill"
+    let taskSubtitle = "Before Breakfast"
     
     var body: some View {
         VStack {
+           
+            HStack {
+                Text("Task")
+                    .font(.headline)
+                    .foregroundColor(.yellow)
+                Spacer()
+            }
+            .padding(.horizontal)
+            
+           
+            ZStack(alignment: .topTrailing) {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.black.opacity(0.8))
+                    .frame(height: 80)
+                
+                HStack {
+                    Image(systemName: "pills.fill")
+                        .foregroundColor(.yellow)
+                        .font(.system(size: 24))
+                    
+                    VStack(alignment: .leading) {
+                        Text(taskTitle)
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        Text(taskSubtitle)
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
+                    
+                    Spacer()
+                }
+                .padding()
+            }
+            .padding(.horizontal)
+
+            
             Button(action: {
-                watchToiOSConnector.sendTaskNotificationToiOS()
+                showConfirmation = true
+                WatchToiOSConnector.shared.sendTaskCompletionToiOS(taskName: taskTitle)
             }) {
-                Text("Invia Notifica a iPhone")
+                Text("Done")
+                    .font(.headline)
+                    .foregroundColor(.yellow)
+                    .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
+                    .background(Color.black)
                     .cornerRadius(10)
             }
+            .padding(.horizontal)
+            
+            Spacer()
         }
-        .onAppear {
-            requestNotificationPermission()
-        }
-    }
-    
-    private func requestNotificationPermission() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, _ in
-            if granted {
-                print("Notifiche autorizzate.")
-            } else {
-                print("Permessi notifiche negati.")
-            }
+        .padding()
+        .fullScreenCover(isPresented: $showConfirmation) {
+            ConfirmationView()
         }
     }
 }
@@ -43,4 +77,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
 

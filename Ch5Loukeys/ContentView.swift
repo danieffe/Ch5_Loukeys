@@ -10,20 +10,54 @@ import UserNotifications
 
 struct ContentView: View {
     
-    private var watchConnector = WatchConnector()
+    @ObservedObject private var sessionManager = PhoneSessionManager.shared
     
     var body: some View {
         VStack {
-            Button(action: {
-                watchConnector.sendTaskNotificationToWatch()
-            }) {
-                Text("Invia Notifica a Watch")
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+
+            HStack {
+                Text("Task")
+                    .font(.headline)
+                    .foregroundColor(.yellow)
+                Spacer()
             }
+            .padding(.horizontal)
+            
+
+            ZStack(alignment: .topTrailing) {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.black.opacity(0.8))
+                    .frame(height: 80)
+                
+                HStack {
+                    Image(systemName: "pills.fill")
+                        .foregroundColor(.yellow)
+                        .font(.system(size: 24))
+                    
+                    VStack(alignment: .leading) {
+                        Text("Morning Pill")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        Text("Before Breakfast")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
+                    
+                    Spacer()
+                }
+                .padding()
+            }
+            .padding(.horizontal)
+            
+            if !sessionManager.taskCompletedMessage.isEmpty {
+                Text(sessionManager.taskCompletedMessage)
+                    .foregroundColor(.green)
+                    .padding()
+            }
+
+            Spacer()
         }
+        .padding()
         .onAppear {
             requestNotificationPermission()
         }
@@ -43,4 +77,6 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
+
 
